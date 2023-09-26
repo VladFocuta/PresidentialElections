@@ -1,0 +1,23 @@
+.elections-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    
+  }
+  
+  .elections-container:hover {
+    transform: translateY(-5px); /* Mișcați textul în sus cu 5px când se face hover */
+    background-color: rgb(37, 37, 37);
+  }
+
+  body {
+    background-color: rgb(97, 95, 95);
+  }
+
+  .button {
+    color: rgb(49, 41, 41)
+  }
