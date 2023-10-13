@@ -1,13 +1,17 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaSignOutAlt } from 'react-icons/fa';
+import { useAuth } from '../User/Contexts/userContext';
 
 function Logout() {
+    const {setLoggedIn} = useAuth();
     const navigate = useNavigate();
+    
     const handleLogOut = () => {
         axios.get('http://localhost:8081/user/logout')
             .then(res => {
+                localStorage.removeItem('authToken');
+                setLoggedIn(false);
                 navigate('/')
             }).catch(err => console.log(err));
     }
