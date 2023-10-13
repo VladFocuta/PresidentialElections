@@ -1,36 +1,14 @@
-import axios from 'axios';
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { FaHome } from 'react-icons/fa';
 import { FaUser } from 'react-icons/fa';
 import DescriptionField from './DescriptionField';
 import Logout from '../Components/Logout';
 import NavBar from '../Components/NavBar';
+import { useAuth } from './Contexts/userContext';
 
 function Home() {
-  const [auth, setAuth] = useState(false);
-  const [message, setMessage] = useState('');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const navigate = useNavigate();
-
-  axios.defaults.withCredentials = true;
-  useEffect(() => {
-    axios.get('http://localhost:8081')
-      .then(res => {
-        if (res.data.Status === "Succes") {
-          setAuth(true);
-          setName(res.data.name)
-          setEmail(res.data.email)
-          navigate('/home');
-        } else {
-          setAuth(false)
-          setMessage(res.data.Error);
-        }
-      })
-      .catch(err => console.log(err))
-  }, [navigate])
-
+  const {user, loggedIn} = useAuth();
+  
   return (
     <div style={{ backgroundColor: 'rgb(97, 95, 95)' }}>
       <div>
@@ -41,26 +19,24 @@ function Home() {
         <Link to='/' style={{ fontSize: '30px', position: 'absolute', top: '0%', left: '10%', color: 'white' }}><FaHome /></Link>
         <div style={{ position: 'absolute', right: '9%', top: '1%' }}><Logout /> </div>
       </div>
-
-      <div className='mt-5' style={{ position: 'absolute', top: '20%', left: '1%' }}>
-        <nav className="" style={{ backgroundColor: 'rgb(97, 95, 95)' }}>
-          <div className="container-fluid" style={{ position: 'relative' }}>
-            <span className="navbar-brand mb-3 h1 " style={{ color: 'white', fontSize: '30px' }}>Wel</span><span className='h3' style={{ color: 'white' }}>come!</span>
-          </div>
-        </nav>
-        <div className='d-flex align-items-center p-3 rounded bg-warning mb-2 mt-3' style={{ maxWidth: '100%', marginLeft: '0.1%' }}>
-          <strong >Name: &nbsp;</strong>
-          <span className='text-decoration-underline fw-semibold' style={{ color: 'black', fontSize: '20px' }}> {name}  </span>
-        </div>
-        <div className='d-flex align-items-center p-3 rounded bg-info ' style={{ maxWidth: '100%', marginLeft: '0.1%' }}>
-          <strong>E-mail: &nbsp;</strong>
-          <span className='text-decoration-underline fw-semibold mt-2' style={{ color: 'black', fontSize: '20px' }}> {email} </span>
-        </div>
-      </div>
       {
-        auth ?
+        loggedIn ?
           <div>
-
+            <div className='mt-5' style={{ position: 'absolute', top: '20%', left: '1%' }}>
+              <nav className="" style={{ backgroundColor: 'rgb(97, 95, 95)' }}>
+                <div className="container-fluid" style={{ position: 'relative' }}>
+                  <span className="navbar-brand mb-3 h1 " style={{ color: 'white', fontSize: '30px' }}>Wel</span><span className='h3' style={{ color: 'white' }}>come!</span>
+                </div>
+              </nav>
+              <div className='d-flex align-items-center p-3 rounded bg-warning mb-2 mt-3' style={{ maxWidth: '100%', marginLeft: '0.1%' }}>
+                <strong >Name: &nbsp;</strong>
+                <span className='text-decoration-underline fw-semibold' style={{ color: 'black', fontSize: '20px' }}> {user.name}  </span>
+              </div>
+              <div className='d-flex align-items-center p-3 rounded bg-info ' style={{ maxWidth: '100%', marginLeft: '0.1%' }}>
+                <strong>E-mail: &nbsp;</strong>
+                <span className='text-decoration-underline fw-semibold mt-2' style={{ color: 'black', fontSize: '20px' }}> {user.email} </span>
+              </div>
+            </div>
             <div className="btn-group w-50 " style={{ maxWidth: '5%', top: '1%', position: 'absolute' }}>
               <button style={{ border: 'none', color: 'red' }}
                 type="button"
@@ -85,8 +61,7 @@ function Home() {
           </div>
           :
           <div>
-            <h3>{message}</h3>
-            <h3 style={{ color: 'white' }}>Login Now</h3>
+            <h3 style={{ color: 'white' }}>You must log-in</h3>
             <Link to='/' className='btn btn-primary'>Login</Link>
           </div>
       }
