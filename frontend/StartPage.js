@@ -6,31 +6,14 @@ import { FaCheck } from 'react-icons/fa';
 import { FaEnvelope } from 'react-icons/fa';
 import { FaUserPlus } from 'react-icons/fa';
 import { FaUser } from 'react-icons/fa';
-import Logout from './Components/Logout';
-import NavBar from './Components/NavBar';
+import NavBar from './NavBar';
+import Logout from './Logout';
+import { useAuth } from '../User/Contexts/userContext';
 
 function StartPage() {
-
-    const [auth, setAuth] = useState(false);
-    const [isCandidate, setIsCandidate] = useState(false);
-    const [hasVoted, setHasVoted] = useState(false);
-    axios.defaults.withCredentials = true;
-    useEffect(() => {
-        axios.get('http://localhost:8081')
-            .then(res => {
-                if (res.data.Status === "Succes") {
-                    setAuth(true);
-                    if (res.data.Candidate === 1) {
-                        setIsCandidate(true);
-                    } if (res.data.Voted === 1) {
-                        setHasVoted(true);
-                    }
-                } else {
-                    setAuth(false)
-                }
-            })
-            .catch(err => console.log(err))
-    }, [])
+    const {user,loggedIn} = useAuth();
+    const isCandidate = user.Candidate ? 1 : 0;
+    const hasVoted = user.Voted ? 1 : 0;
 
     const [candidates, setCandidates] = useState([]);
     useEffect(() => {
@@ -83,8 +66,8 @@ function StartPage() {
                 </div>
             </div>
             {
-                auth ? (
-                    <div style={{}}>
+                loggedIn ? (
+                    <div>
 
                         <div style={{ position: 'absolute', right: '8%', top: '1%' }}>
                             <Logout />
