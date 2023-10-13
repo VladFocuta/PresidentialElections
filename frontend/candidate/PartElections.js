@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import Logout from '../Components/Logout'
 import ElectionsValidation from './ElectionsValidation'
+import Logout from '../Components/Logout';
+import { useAuth } from '../User/Contexts/userContext';
 
 function PartElections() {
+  const {user, loggedIn, setLoggedIn } = useAuth();
+  const [email] = useState(user.email);
   const [values, setValues] = useState({
     City: '',
     Zip: '',
@@ -12,8 +15,6 @@ function PartElections() {
   })
   const [errors, setErrors] = useState([])
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [auth, setAuth] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -24,35 +25,16 @@ function PartElections() {
     setValues(prev => ({ ...prev, [event.target.name]: [event.target.value] }))
   }
 
-  const handleLogOut = () => {
-    axios.get('http://localhost:8081/logout')
-      .then(res => {
-        navigate('/')
-      }).catch(err => console.log(err));
-  }
-
-  useEffect(() => {
-    axios.get('http://localhost:8081')
-      .then(res => {
-        if (res.data.Status === "Succes") {
-          setAuth(true);
-          const emailFromServer = res.data.email;
-          setEmail(emailFromServer);
-        } else {
-          setAuth(false);
-        }
-      })
-      .catch(err => console.log(err));
-  }, [navigate]);
-
   useEffect(() => {
     if (errors.City === "" && errors.Zip === "" && errors.PersonalIdentNumber === "") {
-      const updatedValues = { ...values, email: email };
+      const updatedValues = { ...values, email: user.email };
       axios.put('http://localhost:8081/user/personalInfo', updatedValues)
         .then(res => {
           if (res.data.Status === "Succes") {
+            setLoggedIn(false);
+            localStorage.removeItem('authToken');
           } else {
-            alert("error updating personal infos");
+            alert("error updating personal info");
           }
         })
         .catch(err => console.log(err));
@@ -60,7 +42,7 @@ function PartElections() {
       axios.put('http://localhost:8081/user/isCandidate', { email })
         .then(res => {
           if (res.data.updated) {
-            handleLogOut();
+            navigate('/home');
           }
         })
         .catch(err => console.log(err));
@@ -76,7 +58,7 @@ function PartElections() {
         </div>
       </Link>
       {
-        auth ? (
+        loggedIn ? (
           <div>
             <div style={{ position: 'absolute', right: '8%', top: '2%' }} > <Logout />
             </div>
