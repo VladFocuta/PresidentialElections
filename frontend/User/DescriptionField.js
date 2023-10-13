@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from './Contexts/userContext';
 
 function DescriptionField() {
     const [editing, setEditing] = useState(false);
-    const [email, setEmail] = useState('');
-    const [userDescription, setUserDescription] = useState([]); // aici primesc valoarea noua pusa si o trimis catre server
+    const { user } = useAuth();
+    const [userDescription, setUserDescription] = useState([]);
     const [readOnlyDescription, setReadOnlyDescription] = useState([]);
 
-    axios.defaults.withCredentials = true;
     useEffect(() => {
-        axios.get('http://localhost:8081')
-            .then(res => {
-                if (res.data.Status === "Succes") {
-                    setEmail(res.data.email);
-                    setUserDescription(res.data.userDescription);
-                    setReadOnlyDescription(res.data.userDescription);
-                }
-            })
-            .catch(err => console.log(err));
-    }, []);
+        setUserDescription(user.userDescription);
+        setReadOnlyDescription(user.userDescription);
+    }, [user.userDescription]);
 
     const handleEditClick = () => {
         setEditing(true);
@@ -26,7 +19,7 @@ function DescriptionField() {
 
     const handleSaveClick = (event) => {
         event.preventDefault();
-        axios.put('http://localhost:8081/user/updateDescription', { email, userDescription })
+        axios.put('http://localhost:8081/user/updateDescription', { email: user.email, userDescription })
         setUserDescription(userDescription);
         setReadOnlyDescription(userDescription);
         setEditing(false);
