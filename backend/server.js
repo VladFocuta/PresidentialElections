@@ -207,7 +207,7 @@ app.put('/user/isCandidate', (req, res) => {
     db.query(sql, [email], (err, result) => {
         if (err) {
             console.error("Error SQL: ", err);
-            return res.json({ Status: "Error", Message: "Cannot add any votes / error on server"});
+            return res.json({ Status: "Error", Message: "Cannot candidate / error on server"});
         } 
         return res.json ({ updated: true })
     })
